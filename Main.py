@@ -54,9 +54,9 @@ def mail():
     content = takeCommand()
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-    server.login("jarvisai2904@gmail.com", "drnv yxog yois ksko")
-    server.sendmail("jarvisai2904@gmail.com", "jeganjeganalagappan@gmail.com",
-    content)
+    server.login("xyz@gmail.com", "875fyfg97898687")#Provide login details of email address from where the mail should send 
+    server.sendmail("xyz@gmail.com", "abc@gmail.com",
+    content)#Provide receiver email address to whom the mail should receive
     server.close()
     speak("sending mail")
     print("message sent")
