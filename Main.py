@@ -12,15 +12,27 @@ import requests
 from bs4 import BeautifulSoup
 import operator
 import sys
+from dotenv import load_dotenv  # To load environment variables
+
+# Load environment variables from .env file
+load_dotenv()
+
+EMAIL_USER = os.getenv('EMAIL_USER')
+EMAIL_RECEIVER = os.getenv('EMAIL_RECEIVER')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
+API_KEY = os.getenv('API_KEY')
+
 print("Hi Everyone")
 MASTER = "vicky"
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[0].id)
+
 # Speak function will speak/Pronounce the string which is passed to it
 def speak(text):
     engine.say(text)
     engine.runAndWait()
+
 # This funtion will wish you as per the current time
 def wishMe():
     strTime = datetime.datetime.now().strftime("%H:%M:%S")
@@ -35,32 +47,33 @@ def wishMe():
         speak("Hi Everyone... ")
         speak(f"current time is {strTime}")
         speak("i am your assistant. How may I help you?")
+
 def phnumber(my_string):
     print(my_string)
     phonenum = ("91" + my_string.replace(" ", ""))
-    url("http://apilayer.net/api/validate?access_key=cd3af5f7d1897dc1707c47d05c3759fd&number=" + phonenum)
+    url = f"http://apilayer.net/api/validate?access_key={API_KEY}&number={phonenum}"
     resp = requests.get(url)
     details = resp.json()
-    speak("collecting data")
-    print('')
-    print("Country : " + details['country_name'])
-    speak("Country : " + details['country_name'])
-    print("Location : " + details['location'])
-    speak("Location : " + details['location'])
-    print("Carrier : " + details['carrier'])
-    speak("Carrier : " + details['carrier'])
+    speak("Collecting data...")
+    print(f"Country: {details['country_name']}")
+    speak(f"Country: {details['country_name']}")
+    print(f"Location: {details['location']}")
+    speak(f"Location: {details['location']}")
+    print(f"Carrier: {details['carrier']}")
+    speak(f"Carrier: {details['carrier']}")
+
 def mail():
-    speak("what message do you want to send sir ")
+    speak("What message do you want to send sir?")
     content = takeCommand()
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-    server.login("xyz@gmail.com", "875fyfg97898687")#Provide login details of email address from where the mail should send 
-    server.sendmail("xyz@gmail.com", "abc@gmail.com",
-    content)#Provide receiver email address to whom the mail should receive
+    server.login(EMAIL_USER, EMAIL_PASSWORD)  # Login with credentials from .env
+    server.sendmail(EMAIL_USER, EMAIL_RECEIVER, content)  # Replace with receiver's email
     server.close()
-    speak("sending mail")
-    print("message sent")
-    speak("message sent")
+    speak("Sending mail")
+    print("Message sent")
+    speak("Message sent")
+
 def calc(my_string):
     print(my_string)
     def get_operator_fn(op):
@@ -76,6 +89,7 @@ def calc(my_string):
         speak("Your result is")
         print(eval_binary_expr(*(my_string.split())))
         speak(eval_binary_expr(*(my_string.split())))
+
 # This function will take command from the microphone
 def takeCommand():
     r = sr.Recognizer()
@@ -91,10 +105,10 @@ def takeCommand():
         query = None
         return query
     
-
 # main program starting
 def main():
     query = takeCommand()
+
 # Logic for executing tasks as per the query
 if 'wikipedia' in query.lower():
     query = query.replace("wikipedia", "")
@@ -103,6 +117,7 @@ if 'wikipedia' in query.lower():
     speak('According to wikipedia')
     print(results)
     speak(results)
+
 elif 'wikipedia brief' in query.lower():
     query = query.replace("wikipedia", "")
     speak('searching wikipedia...')
@@ -110,19 +125,23 @@ elif 'wikipedia brief' in query.lower():
     speak('According to wikipedia')
     print(results)
     speak(results)
+
 elif 'trace' in query.lower():
     speak("say the phone number sir ill trace for you")
     my_string = takeCommand()
     phnumber(my_string)
+
 elif 'play song' in query.lower():
     speak("what song do you want to play sir")
     song = takeCommand()
     speak('playing ' + song)
     pywhatkit.playonyt(song)
+
 elif "can you calculate" in query.lower():
     speak("what you want to calculate sir")
     my_string = takeCommand()
     calc(my_string)
+
 elif 'how much power left' in query.lower():
     battery =psutil.sensors_battery()
     per = battery.percent
